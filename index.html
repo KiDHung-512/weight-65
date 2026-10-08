@@ -225,7 +225,8 @@
               </div>
               <p class="form-error" id="w-error" role="alert"></p>
               <button type="submit" class="btn btn-primary btn-block">儲存這筆記錄</button>
-              <p class="hint">同一天再記一次，會更新那天的數字。</p>
+              <p class="hint">記錄會存到雲端，重新整理也不會消失。同一天再記一次，以最新那筆為準。</p>
+              <p class="hint" id="w-sync"></p>
             </form>
 
             <h3 class="mt">最近記錄</h3>
@@ -562,12 +563,35 @@
   <footer class="site-footer">
     <div class="container">
       <p class="footer-note">⚠️ 本網站為個人健康管理小工具，數字為依公式推算的「估計值」，內容為一般性資訊，無法取代醫師或營養師的專業建議。如有任何疑慮，請先諮詢專業人員。</p>
-      <p class="footer-copy">© <span id="year"></span> 輕鬆瘦身計畫 · 資料只存在你的瀏覽器裡</p>
+      <p class="footer-copy">© <span id="year"></span> 輕鬆瘦身計畫 · 體重記錄存在雲端資料庫</p>
     </div>
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <!-- Supabase：體重記錄存到雲端資料庫（只放公開的 Publishable key，沒有任何機密） -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SUPABASE_URL = 'https://wqdgejikrdnqahdbmhyn.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_YRjAARH5JdqROr95hnTAPg_q2Aj99KQ';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    window.wlDb = {
+      async list() {
+        const { data, error } = await supabase
+          .from('weight_logs')
+          .select('log_date, kg, created_at')
+          .order('created_at', { ascending: true })
+          .limit(1000);
+        if (error) throw error;
+        return data;
+      },
+      async add(logDate, kg) {
+        const { error } = await supabase.from('weight_logs').insert({ log_date: logDate, kg: kg });
+        if (error) throw error;
+      }
+    };
+    window.dispatchEvent(new Event('wldb-ready'));
+  </script>
   <script src="js/app.js"></script>
 </body>
 </html>

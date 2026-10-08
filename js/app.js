@@ -1,6 +1,6 @@
 /* =========================================================
    輕鬆瘦身計畫｜主程式（純 JavaScript，不需要任何套件）
-   所有資料都存在瀏覽器的 localStorage，不會上傳到任何地方。
+   體重記錄存在 Supabase 雲端資料庫；計畫與打卡仍存在瀏覽器的 localStorage。
    ========================================================= */
 (function () {
   'use strict';
@@ -703,10 +703,9 @@
   function renderWeightList() {
     const p = state.profile;
     const ul = $('#w-list');
-    if (!p) { ul.innerHTML = '<li class="empty">建立計畫後就能開始記錄。</li>'; return; }
-    const dates = Object.keys(state.weights).filter(d => d >= p.startDate).sort();
+    const dates = Object.keys(state.weights).filter(d => !p || d >= p.startDate).sort();
     if (!dates.length) { ul.innerHTML = '<li class="empty">還沒有記錄，先量一次吧！</li>'; return; }
-    let prev = p.weight;
+    let prev = p ? p.weight : state.weights[dates[0]];
     const rows = dates.map(d => {
       const kg = state.weights[d];
       const delta = r1(kg - prev);
@@ -717,8 +716,7 @@
       const cls = r.delta < 0 ? 'down' : r.delta > 0 ? 'up' : '';
       const txt = r.delta < 0 ? '▼ ' + Math.abs(r.delta).toFixed(1) : r.delta > 0 ? '▲ ' + r.delta.toFixed(1) : '持平';
       return '<li><span class="w-date">' + showDate(r.d) + '</span><span class="w-kg">' + r.kg.toFixed(1) + ' kg</span>' +
-        '<span class="w-delta ' + cls + '">' + txt + '</span>' +
-        '<button type="button" class="w-del" data-del="' + r.d + '" aria-label="刪除 ' + showDate(r.d) + ' 的記錄">✕</button></li>';
+        '<span class="w-delta ' + cls + '">' + txt + '</span></li>';
     }).join('');
   }
 
@@ -1119,18 +1117,29 @@
   }
 
   /* ---------- 表單：體重記錄 ---------- */
-  function onWeightSubmit(e) {
+  async function onWeightSubmit(e) {
     e.preventDefault();
     const err = $('#w-error');
     const p = state.profile;
-    if (!p) { err.textContent = '請先到「我的計畫」建立計畫，才能開始記錄。'; return; }
     const date = $('#w-date').value;
     const kg = parseFloat($('#w-kg').value);
     if (!isDateStr(date)) { err.textContent = '請選擇日期'; return; }
     if (date > fmtDate(today())) { err.textContent = '不能記錄未來的日期'; return; }
-    if (date < p.startDate) { err.textContent = '日期不能早於計畫開始日（' + showDate(p.startDate) + '）'; return; }
+    if (p && date < p.startDate) { err.textContent = '日期不能早於計畫開始日（' + showDate(p.startDate) + '）'; return; }
     if (!inRange(kg, 30, 250)) { err.textContent = '體重請填 30–250 kg'; return; }
     err.textContent = '';
+
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true;
+    try {
+      const db = await whenDb();
+      await db.add(date, r1(kg));
+    } catch (ex) {
+      err.textContent = '儲存到雲端失敗，請稍後再試（' + (ex && ex.message ? ex.message : ex) + '）';
+      btn.disabled = false;
+      return;
+    }
+    btn.disabled = false;
 
     const before = computeStats();
     state.weights[date] = r1(kg);
@@ -1141,7 +1150,7 @@
     renderAll();
 
     let msg = '✅ 已記錄 ' + r1(kg).toFixed(1) + ' kg';
-    if (after.stagesDone > before.stagesDone) {
+    if (p && after.stagesDone > before.stagesDone) {
       const stages = getStages(p);
       const k = after.stagesDone;
       if (k >= stages.length) {
@@ -1153,6 +1162,36 @@
       }
     }
     toast(msg + badgeNote(fresh));
+  }
+
+  /* ---------- 雲端資料（Supabase） ---------- */
+  function whenDb() {
+    if (window.wlDb) return Promise.resolve(window.wlDb);
+    return new Promise((resolve, reject) => {
+      window.addEventListener('wldb-ready', () => resolve(window.wlDb), { once: true });
+      setTimeout(() => reject(new Error('連不上雲端資料庫')), 15000);
+    });
+  }
+
+  async function syncRemoteWeights() {
+    const note = $('#w-sync');
+    if (note) note.textContent = '☁️ 正在讀取雲端記錄…';
+    try {
+      const db = await whenDb();
+      const rows = await db.list();
+      const map = {};
+      rows.forEach(r => {   // 依建立時間排序，同一天以最新一筆為準
+        const kg = Number(r.kg);
+        if (isDateStr(r.log_date) && inRange(kg, 30, 250)) map[r.log_date] = r1(kg);
+      });
+      state.weights = map;
+      save();
+      syncBadges();
+      renderAll();
+      if (note) note.textContent = '☁️ 已同步雲端記錄（' + rows.length + ' 筆）';
+    } catch (ex) {
+      if (note) note.textContent = '⚠️ 讀取雲端記錄失敗：' + (ex && ex.message ? ex.message : ex);
+    }
   }
 
   function onWeightListClick(e) {
@@ -1382,6 +1421,7 @@
     syncBadges();
     renderAll();
     setupNavHighlight();
+    syncRemoteWeights();
   }
 
   init();
