@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 380" role="img" aria-labelledby="hero-title">
+  <title id="hero-title">一條蜿蜒的小路通往山丘頂端的終點旗子</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd3ff"/>
+      <stop offset=".6" stop-color="#d4f0ff"/>
+      <stop offset="1" stop-color="#fff3d6"/>
+    </linearGradient>
+    <clipPath id="frame"><rect width="480" height="380" rx="36"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="480" height="380" fill="url(#sky)"/>
+
+    <!-- 太陽 -->
+    <circle cx="96" cy="92" r="78" fill="#ffc533" opacity=".25"/>
+    <circle cx="96" cy="92" r="50" fill="#ffc533"/>
+    <g stroke="#ffc533" stroke-width="5" stroke-linecap="round">
+      <line x1="96" y1="22" x2="96" y2="34"/>
+      <line x1="96" y1="150" x2="96" y2="162"/>
+      <line x1="26" y1="92" x2="38" y2="92"/>
+      <line x1="154" y1="92" x2="166" y2="92"/>
+      <line x1="46" y1="42" x2="55" y2="51"/>
+      <line x1="137" y1="133" x2="146" y2="142"/>
+      <line x1="146" y1="42" x2="137" y2="51"/>
+      <line x1="55" y1="133" x2="46" y2="142"/>
+    </g>
+
+    <!-- 雲 -->
+    <g fill="#fff">
+      <ellipse cx="262" cy="70" rx="38" ry="12"/>
+      <ellipse cx="288" cy="59" rx="26" ry="13"/>
+      <ellipse cx="400" cy="112" rx="30" ry="10"/>
+      <ellipse cx="420" cy="102" rx="20" ry="10"/>
+    </g>
+
+    <!-- 遠山 -->
+    <path d="M0 250 Q 90 190 190 232 T 380 214 T 480 226 V380 H0 Z" fill="#8be0c4"/>
+
+    <!-- 近山 -->
+    <path d="M0 330 C 100 300, 200 240, 290 170 C 340 130, 420 120, 480 160 V380 H0 Z" fill="#35c28a"/>
+
+    <!-- 小路 -->
+    <path d="M100 384 C 150 352, 270 350, 262 306 C 256 272, 190 280, 232 246 C 270 216, 330 226, 346 182 C 354 160, 372 150, 381 138"
+          fill="none" stroke="#fff8e6" stroke-width="16" stroke-linecap="round"/>
+    <path d="M100 384 C 150 352, 270 350, 262 306 C 256 272, 190 280, 232 246 C 270 216, 330 226, 346 182 C 354 160, 372 150, 381 138"
+          fill="none" stroke="#ff9a62" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 9"/>
+
+    <!-- 小樹 -->
+    <g>
+      <rect x="52" y="304" width="5" height="22" rx="2" fill="#8a5a3c"/>
+      <circle cx="54.5" cy="298" r="16" fill="#15996c"/>
+      <rect x="92" y="326" width="4" height="18" rx="2" fill="#8a5a3c"/>
+      <circle cx="94" cy="320" r="12" fill="#6bd36b"/>
+      <rect x="436" y="190" width="4" height="18" rx="2" fill="#8a5a3c"/>
+      <circle cx="438" cy="184" r="12" fill="#15996c"/>
+    </g>
+
+    <!-- 旗子 -->
+    <rect x="379" y="70" width="4" height="68" rx="2" fill="#6b4a36"/>
+    <rect x="383" y="72" width="60" height="32" rx="7" fill="#d93a22"/>
+    <text x="413" y="94" text-anchor="middle" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" font-size="19" font-weight="800" fill="#fff">GO!</text>
+    <circle cx="381" cy="68" r="5" fill="#ffc533"/>
+
+    <!-- 花 -->
+    <g>
+      <circle cx="170" cy="352" r="6" fill="#ff5fa2"/><circle cx="170" cy="352" r="2.5" fill="#ffc533"/>
+      <circle cx="330" cy="318" r="6" fill="#ffc533"/><circle cx="330" cy="318" r="2.5" fill="#d93a22"/>
+      <circle cx="404" cy="236" r="6" fill="#7a6cf0"/><circle cx="404" cy="236" r="2.5" fill="#ffc533"/>
+      <circle cx="30" cy="356" r="6" fill="#ff5fa2"/><circle cx="30" cy="356" r="2.5" fill="#ffc533"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fffaf2">
+  <title>輕鬆瘦身，達到完美體態｜你的專屬瘦身計畫</title>
+  <meta name="description" content="輕鬆瘦身，達到完美體態！為外食族、手搖飲愛好者與久坐上班族設計的瘦身計畫：自訂目標體重、階段目標、體重記錄、每日打卡、飲食與低衝擊運動建議。">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <script>
+    // 在畫面出現之前先套用使用者選的色彩模式，避免深色模式一閃而過的白畫面
+    (function () {
+      try {
+        var t = localStorage.getItem('wl65:theme');
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* 無痕模式等情況就跟隨系統 */ }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top">
+        <img src="images/favicon.svg" alt="" width="28" height="28">
+        <span>輕鬆瘦身計畫</span>
+      </a>
+      <nav class="nav" aria-label="主要選單">
+        <a href="#top">首頁</a>
+        <a href="#plan">我的計畫</a>
+        <a href="#track">體重記錄</a>
+        <a href="#checkin">每日打卡</a>
+        <a href="#diet">飲食</a>
+        <a href="#exercise">運動</a>
+        <a href="#knowledge">小知識</a>
+      </nav>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="色彩模式：自動（跟隨系統）。按一下切換" title="色彩模式：自動（跟隨系統）">
+        <span id="theme-ico" aria-hidden="true">🌓</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div id="storage-warning" class="container" hidden>
+      <p class="notice notice-warn">⚠️ 這個瀏覽器目前無法儲存資料（可能是無痕模式）。你可以繼續使用，但關掉頁面後記錄會消失。</p>
+    </div>
+
+    <!-- ==================== 首頁 ==================== -->
+    <section id="top" class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">🎉 吃得開心，也能瘦得漂亮！</p>
+          <h1>輕鬆瘦身，<br>達到<span class="hl">完美體態</span> ✨</h1>
+          <p class="lead">不靠極端節食，也不用咬牙硬撐！從外食、手搖飲、宵夜這些日常小地方慢慢調整，搭配從散步開始的低衝擊運動，開開心心、不傷膝蓋地瘦成你想要的樣子。</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#plan">建立我的計畫</a>
+            <a class="btn btn-ghost" href="#checkin">今日打卡</a>
+          </div>
+        </div>
+        <img class="hero-img hero-img--light" src="images/hero.svg" alt="一條蜿蜒的小路通往山丘頂端的終點旗子" width="480" height="380">
+        <img class="hero-img hero-img--dark" src="images/hero-dark.svg" alt="夜晚的月光下，一條蜿蜒的小路通往山丘頂端的終點旗子" width="480" height="380" loading="lazy">
+      </div>
+    </section>
+
+    <section class="dashboard" aria-label="我的進度總覽">
+      <div class="container">
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="stat-label">目前體重</span>
+            <span class="stat-value"><strong id="d-current">—</strong> kg</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">已經減少</span>
+            <span class="stat-value"><strong id="d-lost">—</strong> kg</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">距離目標</span>
+            <span class="stat-value"><strong id="d-remain">—</strong> kg</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">連續打卡</span>
+            <span class="stat-value"><strong id="d-streak">0</strong> 天</span>
+          </div>
+        </div>
+
+        <div class="progress-card card">
+          <div class="progress-head">
+            <h2 class="h3">整體進度</h2>
+            <span class="progress-num" id="d-progress-num">0%</span>
+          </div>
+          <div class="bar-wrap" id="d-bar-outer">
+            <div class="bar" role="progressbar" aria-label="減重進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="d-bar-wrap">
+              <div class="bar-fill" id="d-bar"></div>
+            </div>
+            <div class="bar-marks" id="d-marks" aria-hidden="true"></div>
+          </div>
+          <p class="progress-stage" id="d-stage"></p>
+          <p class="progress-text" id="d-progress-text">建立計畫後，這裡會顯示你的進度。</p>
+          <p class="progress-pace" id="d-pace"></p>
+        </div>
+
+        <figure class="quote card">
+          <span class="quote-mark" aria-hidden="true">“</span>
+          <blockquote id="d-quote"></blockquote>
+          <figcaption>今日一句</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ==================== 我的計畫 ==================== -->
+    <section id="plan" class="section">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">第一步</p>
+          <h2>我的計畫</h2>
+          <p class="section-lead">輸入基本資料，<strong>目標體重由你自己決定</strong>，馬上算出你每天大概該吃多少、減重速度是否合理。大目標還可以拆成幾個<strong>階段目標</strong>，一關一關慢慢過。<strong>資料只會存在你這台裝置的瀏覽器，不會上傳到任何地方。</strong></p>
+        </header>
+
+        <div class="plan-grid">
+          <form id="plan-form" class="card form" novalidate>
+            <h3>基本資料</h3>
+
+            <fieldset class="field">
+              <legend>性別 <small>（只用來估算基礎代謝）</small></legend>
+              <div class="seg">
+                <label><input type="radio" name="sex" value="female"><span>女</span></label>
+                <label><input type="radio" name="sex" value="male"><span>男</span></label>
+              </div>
+            </fieldset>
+
+            <div class="field-row">
+              <label class="field">
+                <span class="label">年齡</span>
+                <span class="input-unit"><input type="number" id="f-age" min="18" max="90" step="1" inputmode="numeric" autocomplete="off"><em>歲</em></span>
+              </label>
+              <label class="field">
+                <span class="label">身高</span>
+                <span class="input-unit"><input type="number" id="f-height" min="120" max="220" step="0.1" inputmode="decimal" autocomplete="off"><em>cm</em></span>
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label class="field">
+                <span class="label">目前體重</span>
+                <span class="input-unit"><input type="number" id="f-weight" min="35" max="250" step="0.1" inputmode="decimal" autocomplete="off"><em>kg</em></span>
+              </label>
+              <label class="field">
+                <span class="label">最終目標體重</span>
+                <span class="input-unit"><input type="number" id="f-target" min="35" max="250" step="0.1" inputmode="decimal" placeholder="例如 60" autocomplete="off"><em>kg</em></span>
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="label">開始日期</span>
+              <input type="date" id="f-start">
+            </label>
+
+            <fieldset class="stages">
+              <legend>階段目標 <small>（把大目標拆成幾個小步，更容易堅持）</small></legend>
+              <div class="stage-head" aria-hidden="true"><span>階段</span><span>目標體重</span><span>要花幾週</span><span></span></div>
+              <div id="stage-list" class="stage-list"></div>
+              <div class="stage-actions">
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-add-stage">＋ 加一個中途目標</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-auto-stage">✨ 幫我自動分段</button>
+              </div>
+              <p class="hint" id="f-weeks-note"></p>
+            </fieldset>
+
+            <label class="field">
+              <span class="label">平常的活動量</span>
+              <select id="f-activity">
+                <option value="1.2" selected>久坐（辦公室工作、少走動）</option>
+                <option value="1.375">輕度活動（偶爾運動或常走動）</option>
+                <option value="1.55">中度活動（每週運動 3–5 次）</option>
+              </select>
+            </label>
+
+            <p class="form-error" id="form-error" role="alert"></p>
+            <button type="submit" class="btn btn-primary btn-block">儲存我的計畫</button>
+          </form>
+
+          <div id="plan-result" class="result" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 體重記錄 ==================== -->
+    <section id="track" class="section section-alt">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">每週 2–3 次就好</p>
+          <h2>體重記錄</h2>
+          <p class="section-lead">固定在早上起床、上完廁所後量，條件一致才看得出真正的趨勢。體重每天會上下浮動很正常，看大方向就好。</p>
+        </header>
+
+        <div class="track-grid">
+          <div class="card">
+            <div class="chart-head">
+              <h3>體重曲線</h3>
+              <ul class="legend" aria-label="圖例">
+                <li><i class="lg lg-actual"></i>實際體重</li>
+                <li><i class="lg lg-plan"></i>參考線</li>
+                <li><i class="lg lg-goal"></i>目標</li>
+                <li id="lg-hold" hidden><i class="lg lg-hold"></i>維持期</li>
+              </ul>
+            </div>
+            <div id="chart" class="chart"></div>
+            <p class="chart-note" id="t-pace"></p>
+          </div>
+
+          <div class="card">
+            <h3>新增記錄</h3>
+            <form id="w-form" class="form" novalidate>
+              <div class="field-row">
+                <label class="field">
+                  <span class="label">日期</span>
+                  <input type="date" id="w-date">
+                </label>
+                <label class="field">
+                  <span class="label">體重</span>
+                  <span class="input-unit"><input type="number" id="w-kg" min="30" max="250" step="0.1" inputmode="decimal" autocomplete="off"><em>kg</em></span>
+                </label>
+              </div>
+              <p class="form-error" id="w-error" role="alert"></p>
+              <button type="submit" class="btn btn-primary btn-block">儲存這筆記錄</button>
+              <p class="hint">同一天再記一次，會更新那天的數字。</p>
+            </form>
+
+            <h3 class="mt">最近記錄</h3>
+            <ul id="w-list" class="w-list"></ul>
+
+            <details class="backup">
+              <summary>備份與還原我的資料</summary>
+              <p class="hint">資料存在這個瀏覽器裡，換手機、換電腦或清除瀏覽資料就會不見。建議偶爾下載備份檔。</p>
+              <div class="backup-actions">
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-export">下載備份</button>
+                <label class="btn btn-ghost btn-sm file-btn">匯入備份<input type="file" id="file-import" accept="application/json,.json" hidden></label>
+                <button type="button" class="btn btn-danger btn-sm" id="btn-reset">清除全部資料</button>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 每日打卡 ==================== -->
+    <section id="checkin" class="section">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">小習慣，累積大改變</p>
+          <h2>每日打卡</h2>
+          <p class="section-lead">一天勾 4 項以上就算「達標日」。不用每項都完美，重點是不要中斷太久。這些習慣特別針對手搖飲和宵夜設計。</p>
+        </header>
+
+        <div class="checkin-grid">
+          <div class="card">
+            <div class="date-nav">
+              <button type="button" class="icon-btn" id="ci-prev" aria-label="前一天">‹</button>
+              <h3 id="ci-date" aria-live="polite"></h3>
+              <button type="button" class="icon-btn" id="ci-next" aria-label="後一天">›</button>
+            </div>
+            <ul id="ci-list" class="check-list"></ul>
+            <div class="ci-summary">
+              <div class="bar bar-sm"><div class="bar-fill" id="ci-bar"></div></div>
+              <p id="ci-msg"></p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>最近四到五週</h3>
+            <div class="cal-head" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+            <div id="ci-grid" class="cal-grid"></div>
+            <ul class="cal-legend">
+              <li><i class="cal-dot lvl-0"></i>未打卡</li>
+              <li><i class="cal-dot lvl-1"></i>有努力</li>
+              <li><i class="cal-dot lvl-2"></i>達標日</li>
+              <li><i class="cal-dot lvl-3"></i>全勾</li>
+            </ul>
+            <p class="hint">點日期可以補打卡或修改。</p>
+          </div>
+        </div>
+
+        <h3 class="mt-lg">我的徽章</h3>
+        <div id="badges" class="badge-grid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 飲食 ==================== -->
+    <section id="diet" class="section section-alt">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">外食族也能做到</p>
+          <h2>飲食建議</h2>
+          <p class="section-lead">不用戒掉所有喜歡的東西。先從最容易的三件事開始：<strong>飲料換無糖、宵夜換替代品、外食挑對組合</strong>。</p>
+        </header>
+
+        <div class="card diet-target" id="diet-target"></div>
+
+        <h3 class="mt-lg">一餐怎麼抓份量：手掌法</h3>
+        <p class="section-lead small">不用秤重、不用算熱量，用自己的手比就好。</p>
+        <div class="plate-grid">
+          <article class="plate">
+            <span class="plate-icon" aria-hidden="true">🍗</span>
+            <h4>蛋白質 <small>1 個手掌心</small></h4>
+            <p>雞蛋、豆腐、豆干、魚、雞胸、無糖豆漿。每餐都要有，最能增加飽足感、守住肌肉。</p>
+          </article>
+          <article class="plate">
+            <span class="plate-icon" aria-hidden="true">🥦</span>
+            <h4>蔬菜 <small>2 個拳頭</small></h4>
+            <p>燙青菜、涼拌、菇類、海帶。外食最容易缺，記得主動多夾一份。</p>
+          </article>
+          <article class="plate">
+            <span class="plate-icon" aria-hidden="true">🍚</span>
+            <h4>澱粉 <small>約 1 個拳頭</small></h4>
+            <p>白飯、地瓜、玉米、燕麥。不是不吃，先從半碗到 3/4 碗開始，再依體重變化調整。</p>
+          </article>
+          <article class="plate">
+            <span class="plate-icon" aria-hidden="true">🥜</span>
+            <h4>好油脂 <small>1 個拇指</small></h4>
+            <p>堅果、酪梨、橄欖油。少量就夠，不用每一餐都又炸又炒。</p>
+          </article>
+        </div>
+
+        <h3 class="mt-lg">外食、便當的挑選技巧</h3>
+        <div class="card">
+          <ul class="tips">
+            <li><strong>自助餐 &gt; 便當店 &gt; 麵食。</strong>自己夾菜最能控制份量。夾菜順序：先青菜、再蛋白質、最後才是飯。</li>
+            <li><strong>少選這幾種做法：</strong>油炸、勾芡、糖醋、紅燒滷汁拌飯、三杯。它們的油和糖都比你看起來的多。</li>
+            <li><strong>飯先減量。</strong>說「飯少一點」或只吃 3/4 碗，不夠飽就加青菜，不要加飯或甜點。</li>
+            <li><strong>湯麵的湯只喝一半。</strong>湯裡鈉含量高，容易水腫，隔天體重也會比較浮動。</li>
+            <li><strong>超商組合公式：</strong>蛋白質（雞胸、茶葉蛋、豆漿、優格）＋蔬菜（沙拉、燙青菜）＋少量澱粉（御飯糰、地瓜）。</li>
+            <li><strong>看包裝標示：</strong>一包常常是 2 份，熱量要乘以 2。沙拉醬料只用一半。</li>
+          </ul>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <h3 class="mt-lg">手搖飲替代表 <small class="tag">你的重點關卡</small></h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>原本</th><th>換成</th><th>大約少掉</th></tr></thead>
+                <tbody>
+                  <tr><td>全糖珍珠奶茶（700 ml）<br><small>約 550–700 kcal</small></td><td>無糖烏龍茶／綠茶</td><td>約 550–690 kcal</td></tr>
+                  <tr><td>全糖水果茶<br><small>約 300–450 kcal</small></td><td>無糖茶＋檸檬片</td><td>約 300–440 kcal</td></tr>
+                  <tr><td>全糖鮮奶茶<br><small>約 350–500 kcal</small></td><td>無糖鮮奶茶（小杯）</td><td>約 150–250 kcal</td></tr>
+                  <tr><td>含糖汽水（1 罐）<br><small>約 140 kcal</small></td><td>無糖氣泡水</td><td>約 140 kcal</td></tr>
+                  <tr><td>全糖</td><td>半糖或微糖</td><td>約 100–200 kcal</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="hint">熱量為各家店的大致範圍，僅供估算。循序漸進：全糖 → 半糖 → 微糖 → 無糖，不用一次到位。</p>
+          </div>
+
+          <div>
+            <h3 class="mt-lg">宵夜替代表 <small class="tag">你的另一個重點</small></h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>想吃</th><th>可以換成</th></tr></thead>
+                <tbody>
+                  <tr><td>鹽酥雞（1 份）<br><small>約 450–600 kcal</small></td><td>茶葉蛋＋溫無糖豆漿<br><small>約 200 kcal</small></td></tr>
+                  <tr><td>泡麵（1 碗）<br><small>約 400–500 kcal</small></td><td>豆腐或燙青菜＋清湯<br><small>約 100–150 kcal</small></td></tr>
+                  <tr><td>餅乾、洋芋片（1 包）<br><small>約 250–500 kcal</small></td><td>無糖優格＋一小把堅果<br><small>約 200 kcal</small></td></tr>
+                  <tr><td>冰淇淋、甜點</td><td>水果一份、小條地瓜<br><small>約 100–180 kcal</small></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="hint"><strong>想吃宵夜時先做這三件事：</strong>刷牙、喝一大杯水或熱茶、等 15 分鐘。很多時候只是習慣，不是真的餓。</p>
+          </div>
+        </div>
+
+        <h3 class="mt-lg">一週菜單示範</h3>
+        <p class="section-lead small">以外食、超商為主，約 1,400–1,700 kcal 的示範。依你上面算出的熱量，用「飯量」調整多寡就好。</p>
+        <div class="card">
+          <div id="menu-tabs" class="menu-tabs" role="tablist" aria-label="選擇星期"></div>
+          <div id="menu-panel" class="menu-panel" role="tabpanel" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 運動 ==================== -->
+    <section id="exercise" class="section">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">從走路開始</p>
+          <h2>運動計畫</h2>
+          <p class="section-lead">你習慣久坐，加上膝蓋、腳踝或腰背偶爾不適，所以計畫會<strong>從低衝擊開始、不跳躍、循序漸進</strong>。體重變輕、肌力變好之後，關節的負擔也會跟著變小。</p>
+        </header>
+
+        <div class="phase-grid">
+          <article class="phase" data-phase="1" data-from="1" data-to="4">
+            <span class="phase-tag" hidden>你現在在這裡</span>
+            <p class="phase-weeks">第 1–4 週</p>
+            <h3>喚醒期</h3>
+            <p class="phase-goal">目標：先養成「動起來」的習慣</p>
+            <ul>
+              <li>快走 <strong>15–20 分鐘</strong>，每週 3–4 天</li>
+              <li>徒手運動每週 <strong>2 次</strong>，每個動作 1 組</li>
+              <li>每天步數 <strong>5,000–6,000</strong> 步</li>
+            </ul>
+          </article>
+          <article class="phase" data-phase="2" data-from="5" data-to="8">
+            <span class="phase-tag" hidden>你現在在這裡</span>
+            <p class="phase-weeks">第 5–8 週</p>
+            <h3>成長期</h3>
+            <p class="phase-goal">目標：增加時間與肌力</p>
+            <ul>
+              <li>快走 <strong>30 分鐘</strong>，每週 4–5 天</li>
+              <li>徒手運動每週 <strong>2–3 次</strong>，每個動作 2 組</li>
+              <li>每天步數 <strong>6,500–8,000</strong> 步</li>
+            </ul>
+          </article>
+          <article class="phase" data-phase="3" data-from="9" data-to="999">
+            <span class="phase-tag" hidden>你現在在這裡</span>
+            <p class="phase-weeks">第 9 週起</p>
+            <h3>穩定期</h3>
+            <p class="phase-goal">目標：維持並突破平台期</p>
+            <ul>
+              <li>快走 <strong>40–50 分鐘</strong>，每週 4–5 天</li>
+              <li>徒手運動每週 <strong>3 次</strong>，每個動作 2–3 組，可手拿水瓶加重</li>
+              <li>每天步數 <strong>8,000–10,000</strong> 步</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <h3 class="mt-lg">一週安排範例</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>星期</th><th>內容</th></tr></thead>
+                <tbody>
+                  <tr><td>週一</td><td>快走</td></tr>
+                  <tr><td>週二</td><td>徒手運動 A（坐站、牆壁伏地挺身、臀橋）</td></tr>
+                  <tr><td>週三</td><td>快走</td></tr>
+                  <tr><td>週四</td><td>休息，或輕鬆伸展 10 分鐘</td></tr>
+                  <tr><td>週五</td><td>徒手運動 B（鳥狗式、側抬腿、原地踏步）</td></tr>
+                  <tr><td>週六</td><td>長一點的散步（公園、河濱）</td></tr>
+                  <tr><td>週日</td><td>休息</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="hint">時間長短依上面你所在的階段調整。</p>
+          </div>
+
+          <div>
+            <h3 class="mt-lg">運動前後與安全提醒</h3>
+            <div class="card">
+              <ul class="tips">
+                <li><strong>熱身：</strong>先慢走 3–5 分鐘，轉轉肩膀、髖部和腳踝。</li>
+                <li><strong>收操：</strong>大腿前後側、小腿各伸展 20–30 秒，不要憋氣。</li>
+                <li><strong>痠和痛不一樣：</strong>肌肉痠是正常的；關節刺痛、尖銳的痛要立刻停止。</li>
+                <li><strong>先避開：</strong>跳躍、深蹲到底、快跑、仰臥起坐。等體重下降、肌力變好再考慮。</li>
+                <li><strong>鞋子：</strong>穿有緩衝的運動鞋，走路比什麼都需要一雙好鞋。</li>
+                <li>疼痛持續超過幾天，請找醫師或物理治療師評估。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="mt-lg">在家就能做的 6 個低衝擊動作</h3>
+        <div class="move-grid">
+          <article class="move">
+            <h4>1. 坐站運動（椅子深蹲）</h4>
+            <p class="dose">10–12 次 × 2 組</p>
+            <p>坐在穩固椅子的前緣，雙腳與肩同寬踩穩。身體微微前傾，用腿的力量站起來、站直，再慢慢坐回去。</p>
+            <p class="care">🦵 起身時膝蓋對著腳尖方向，不要往內夾。膝蓋不舒服就把椅子墊高。</p>
+          </article>
+          <article class="move">
+            <h4>2. 牆壁伏地挺身</h4>
+            <p class="dose">8–12 次 × 2 組</p>
+            <p>雙手扶牆與肩同寬，腳離牆約一步。身體保持一直線，手肘彎曲讓胸口靠近牆壁，再推回原位。</p>
+            <p class="care">🧘 腰不要塌下去，肚子輕輕收緊。</p>
+          </article>
+          <article class="move">
+            <h4>3. 臀橋</h4>
+            <p class="dose">10–15 次 × 2 組</p>
+            <p>仰躺屈膝，腳掌踩地。臀部抬起到肩膀、髖部、膝蓋成一直線，停 2 秒再慢慢放下。</p>
+            <p class="care">🍑 用臀部出力，不要用腰去拱。抬到平行就好，腰背會比較舒服。</p>
+          </article>
+          <article class="move">
+            <h4>4. 鳥狗式</h4>
+            <p class="dose">每側 6–8 次 × 2 組</p>
+            <p>四足跪姿，手在肩膀正下方。同時伸直一隻手和對側的腳，停 2 秒再換邊。</p>
+            <p class="care">🐦 背部保持平穩不晃動，對腰背很友善。膝蓋不舒服就在下面墊條毛巾。</p>
+          </article>
+          <article class="move">
+            <h4>5. 扶椅側抬腿</h4>
+            <p class="dose">每側 10–12 次 × 2 組</p>
+            <p>單手扶椅背站穩，一隻腳往側邊慢慢抬起再放下，上半身保持直立。</p>
+            <p class="care">⚖️ 抬到身體不晃的高度就好，不用求高。</p>
+          </article>
+          <article class="move">
+            <h4>6. 原地踏步（不跳）</h4>
+            <p class="dose">1–2 分鐘 × 3 組</p>
+            <p>原地輪流抬膝，手臂自然擺動，腳輕輕落地、不要跳起來。看電視時也能做。</p>
+            <p class="care">🦶 腳踝或膝蓋不舒服就放慢速度、膝蓋抬低一點。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 小知識 ==================== -->
+    <section id="knowledge" class="section section-alt">
+      <div class="container narrow">
+        <header class="section-head">
+          <p class="eyebrow">了解原理，比較不焦慮</p>
+          <h2>減脂小知識</h2>
+        </header>
+
+        <div class="faq">
+          <details>
+            <summary>減重的核心是什麼？</summary>
+            <p>簡單說就是「吃進去的熱量 &lt; 消耗掉的熱量」。一般估算每少掉約 7,700 kcal 的熱量，大約能減少 1 公斤的體脂肪。所以每天少 500 kcal，一週大約少 0.45 公斤。這是估算值，每個人會有差異，最準的方法是持續記錄，用實際的體重變化來微調。</p>
+          </details>
+          <details>
+            <summary>為什麼要把目標拆成階段？</summary>
+            <p>一口氣盯著「還要減 13 公斤」很容易喪氣；拆成「先減 8 公斤、再減 5 公斤」，每達成一關都是一次成就感，也更容易堅持。另一個好處是：體重變輕之後，身體每天消耗的熱量也會變少，所以每個階段結束時重新計算熱量，會比一次算到底更準確。階段之間還可以安排 1–2 週的「維持期」，讓身體和心情喘口氣（見下一題）。</p>
+          </details>
+          <details>
+            <summary>維持期是什麼？要做什麼？</summary>
+            <p>維持期就是「達成一個階段目標後，先不繼續減，花 1–2 週把體重穩住」。這段時間把每天的熱量吃回「維持熱量」（網站會幫你算好），運動照常，體重在上下 1 公斤內波動就算成功。好處是：讓身體和新習慣追上來、降低復胖的機會、讓情緒和食慾緩一緩，也能順便度過可能出現的停滯期。維持期不是放縱，不要因為可以多吃一點就報復性大吃。</p>
+          </details>
+          <details>
+            <summary>為什麼體重每天都上上下下？</summary>
+            <p>身體水分、吃的鹹度、排便狀況、女性的生理週期都會讓體重一天內浮動 0.5–2 公斤。這不是胖了或瘦了，所以不要因為單一天的數字而沮喪或放棄。看「一到兩週的趨勢」才準。</p>
+          </details>
+          <details>
+            <summary>體重停滯了好幾週，怎麼辦？</summary>
+            <p>先別慌，這很常見。依序檢查：①記錄有沒有漏掉手搖飲和宵夜（最常見原因）②睡眠是否不足③每天步數是否比之前少了。可以試著每天多走 1,000–2,000 步，或把飯量再減少一點點。如果停滯超過 3–4 週，再重新評估熱量目標。也可以量腰圍，有時體重沒變，腰圍卻變小了。</p>
+          </details>
+          <details>
+            <summary>為什麼蛋白質這麼重要？</summary>
+            <p>減重期間，身體不只會掉脂肪，也可能掉肌肉。吃足夠的蛋白質加上適度的肌力運動，能幫你留住肌肉、提升飽足感，讓你瘦下來的是脂肪，而不是力氣和代謝。</p>
+          </details>
+          <details>
+            <summary>睡眠和壓力也會影響體重嗎？</summary>
+            <p>會。睡不夠的時候，身體會更想吃高糖高油的食物，也比較沒有動力運動。壓力大則容易讓人用吃來紓解。把睡滿 7 小時當成計畫的一部分，比多做一組運動還有效。</p>
+          </details>
+          <details>
+            <summary>為什麼不要一下子吃得很少？</summary>
+            <p>吃太少會掉肌肉、容易頭暈疲倦、情緒變差，也更容易在撐不住時暴食，最後復胖。這個網站設定了熱量下限（女性約 1,200 kcal、男性約 1,500 kcal），而且會在你設定的期限太緊時提醒你。慢一點，才走得久。</p>
+          </details>
+          <details>
+            <summary>量體重有什麼訣竅？</summary>
+            <p>每次都在同樣的條件下量：早上起床、上完廁所、吃東西之前、穿著輕便或不穿衣服、使用同一台體重計。每週量 2–3 次就夠，不用每天量。</p>
+          </details>
+          <details>
+            <summary>今天吃太多了怎麼辦？</summary>
+            <p>下一餐照常吃就好。不要用「明天不吃」或「加倍運動」來補償，這種方式容易變成暴食與節食的循環。一天的失誤，在一個月的計畫裡幾乎看不出來。</p>
+          </details>
+          <details>
+            <summary>什麼時候要先問醫師或營養師？</summary>
+            <p>有糖尿病、高血壓、心臟或腎臟疾病、正在服藥、懷孕或哺乳、或曾有飲食失調的人，請先諮詢專業人員再開始。運動時若出現胸悶、頭暈、心悸或呼吸困難，請立刻停止並就醫。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-note">⚠️ 本網站為個人健康管理小工具，數字為依公式推算的「估計值」，內容為一般性資訊，無法取代醫師或營養師的專業建議。如有任何疑慮，請先諮詢專業人員。</p>
+      <p class="footer-copy">© <span id="year"></span> 輕鬆瘦身計畫 · 資料只存在你的瀏覽器裡</p>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
