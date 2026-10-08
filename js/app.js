@@ -132,6 +132,7 @@
   const shortDate = d => (d.getMonth() + 1) + '/' + d.getDate();
   const r1 = n => Math.round(n * 10) / 10;
   const fmt = n => Number(n).toLocaleString('en-US');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const inRange = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;
   const num = (v, lo, hi) => { const n = Number(v); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
   const sum = arr => arr.reduce((a, b) => a + b, 0);
@@ -716,7 +717,8 @@
       const cls = r.delta < 0 ? 'down' : r.delta > 0 ? 'up' : '';
       const txt = r.delta < 0 ? '▼ ' + Math.abs(r.delta).toFixed(1) : r.delta > 0 ? '▲ ' + r.delta.toFixed(1) : '持平';
       return '<li><span class="w-date">' + showDate(r.d) + '</span><span class="w-kg">' + r.kg.toFixed(1) + ' kg</span>' +
-        '<span class="w-delta ' + cls + '">' + txt + '</span></li>';
+        '<span class="w-delta ' + cls + '">' + txt + '</span>' +
+        (remoteNotes[r.d] ? '<span class="w-note">' + esc(remoteNotes[r.d]) + '</span>' : '') + '</li>';
     }).join('');
   }
 
@@ -1133,7 +1135,10 @@
     btn.disabled = true;
     try {
       const db = await whenDb();
-      await db.add(date, r1(kg));
+      const noteText = ($('#w-note').value || '').trim().slice(0, 100);
+      await db.add(date, r1(kg), noteText);
+      remoteNotes[date] = noteText;
+      $('#w-note').value = '';
     } catch (ex) {
       err.textContent = '儲存到雲端失敗，請稍後再試（' + (ex && ex.message ? ex.message : ex) + '）';
       btn.disabled = false;
@@ -1165,6 +1170,7 @@
   }
 
   /* ---------- 雲端資料（Supabase） ---------- */
+  let remoteNotes = {};   // 每天最新一筆的備註（只在畫面上顯示）
   function whenDb() {
     if (window.wlDb) return Promise.resolve(window.wlDb);
     return new Promise((resolve, reject) => {
@@ -1179,12 +1185,13 @@
     try {
       const db = await whenDb();
       const rows = await db.list();
-      const map = {};
+      const map = {}, notes = {};
       rows.forEach(r => {   // 依建立時間排序，同一天以最新一筆為準
         const kg = Number(r.kg);
-        if (isDateStr(r.log_date) && inRange(kg, 30, 250)) map[r.log_date] = r1(kg);
+        if (isDateStr(r.log_date) && inRange(kg, 30, 250)) { map[r.log_date] = r1(kg); notes[r.log_date] = r.note || ''; }
       });
       state.weights = map;
+      remoteNotes = notes;
       save();
       syncBadges();
       renderAll();
